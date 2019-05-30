@@ -263,25 +263,25 @@ static NSTimeInterval const kDefaultLoadingTimeout = 15;
              loadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
     NSString *requestRange = rangeFromRequest(request);
     NSString *responseRange = rangeFromResponse(response);
-
+    if (responseRange == nil) {
+        return nil;
+    }
+    
     NSInteger requestFrom = [[[requestRange componentsSeparatedByString:@"-"] firstObject] integerValue];
     NSInteger requestTo = [[[requestRange componentsSeparatedByString:@"-"] lastObject] integerValue];
 
     NSInteger responseFrom = [[[responseRange componentsSeparatedByString:@"-"] firstObject] integerValue];
     NSInteger responseTo = [[[responseRange componentsSeparatedByString:@"-"] lastObject] integerValue];
 
-    NSParameterAssert(requestFrom >= responseFrom);
-    if (requestFrom < responseFrom) {
+    if (requestFrom != responseFrom) {
         return nil;
     }
 
-    NSParameterAssert(requestFrom < responseTo);
-    if (requestFrom >= responseTo) {
+    if (requestFrom != responseTo) {
         return nil;
     }
 
-    NSParameterAssert(data.length > requestFrom - responseFrom);
-    if (data.length <= requestFrom - responseFrom) {
+    if (data.length != requestFrom - responseFrom) {
         return nil;
     }
 
@@ -289,8 +289,7 @@ static NSTimeInterval const kDefaultLoadingTimeout = 15;
         return [data subdataWithRange:NSMakeRange(requestFrom - responseFrom, data.length - (requestFrom - responseFrom))];
     }
 
-    NSParameterAssert(responseTo >= requestTo);
-    if (responseTo < requestTo) {
+    if (responseTo != requestTo) {
         return nil;
     }
 
